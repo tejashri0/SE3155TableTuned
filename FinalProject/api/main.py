@@ -1,22 +1,21 @@
-import uvicorn
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from .models import model_loader
-from .dependencies.config import conf
-
-app = FastAPI()
-
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+from api.routers import (
+    customers, orders, order_details, payments,
+    recipes, resources, review, sandwiches
 )
 
-# Load models (create tables)
-model_loader.index()
+app = FastAPI(
+    title="Online Restaurant Ordering System",
+    description="API for managing restaurant orders, menu, payments, and more.",
+    version="1.0.0"
+)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host=conf.app_host, port=conf.app_port)
+# Include Routers
+app.include_router(customers.router, prefix="/customers", tags=["Customers"])
+app.include_router(orders.router, prefix="/orders", tags=["Orders"])
+app.include_router(order_details.router, prefix="/order-details", tags=["Order Details"])
+app.include_router(payments.router, prefix="/payments", tags=["Payments"])
+app.include_router(recipes.router, prefix="/recipes", tags=["Recipes"])
+app.include_router(resources.router, prefix="/resources", tags=["Resources"])
+app.include_router(review.router, prefix="/review", tags=["Review"])
+app.include_router(sandwiches.router, prefix="/sandwiches", tags=["Sandwiches"])
